@@ -8,7 +8,6 @@ import { addUser, removeUser } from "../Utils/userSlice";
 import { logo } from "../Utils/constants";
 
 const Header = () => {
-
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
   const navigate = useNavigate();
@@ -26,32 +25,39 @@ const Header = () => {
   };
 
   useEffect(() => {
-   const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
         const { uid, displayName, email, photoURL } = user;
-        dispatch(addUser({ uid: uid, displayName: displayName, email: email, photoURL: photoURL }));
+        dispatch(
+          addUser({
+            uid: uid,
+            displayName: displayName,
+            email: email,
+            photoURL: photoURL,
+          })
+        );
         navigate("/browse");
         // ...
       } else {
         dispatch(removeUser());
-        navigate("/")
+        navigate("/");
         // User is signed out
         // ...
       }
     });
     return () => {
       unsubscribe();
-    }
+    };
   }, []);
 
   return (
-    <div className="flex justify-between">
+    <div className="flex relative z-10 justify-between">
       <div>
         <img
           className="absolute z-10 bg-black/50 w-1/12"
-          src= {logo}
+          src={logo}
           alt="Logo"
         />
       </div>

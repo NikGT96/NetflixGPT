@@ -19,7 +19,8 @@ const useNowPlayingMovies = () => {
         throw new Error("Error");
       }
       const data = await response.json();
-      dispatch(addNowPlayingMovies(data));
+      // console.log(data.results);
+      dispatch(addNowPlayingMovies(data.results));
     } catch (err) {
       console.log(err.message);
     }
