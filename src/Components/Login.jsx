@@ -2,10 +2,18 @@ import React, { useRef } from "react";
 import Header from "./Header";
 import { useState } from "react";
 import { checkValidation } from "../Utils/validate";
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth } from "../Utils/firebase";
+import { updateProfile } from "firebase/auth";
+import { addUser } from "../Utils/userSlice";
+import { useDispatch } from "react-redux";
+import { photo_URL } from "../Utils/constants";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [message, setMessage] = useState(null);
   const toggleSignInForm = () => {
@@ -29,22 +37,50 @@ const Login = () => {
     setMessage(validation);
     if (!validation) {
       if (!isSignInForm) {
-        createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+        createUserWithEmailAndPassword(
+          auth,
+          email.current.value,
+          password.current.value
+        )
           .then((userCredential) => {
             // Signed up
             const user = userCredential.user;
+            updateProfile(user, {
+              displayName: name.current.value,
+              photoURL: photo_URL,
+            })
+              .then(() => {
+                // Profile updated! , again dispatching here so that our store get updated user values. thats why using auth.currentuser.
+                const { uid, displayName, email, photoURL } = auth.currentUser;
+                dispatch(
+                  addUser({
+                    uid: uid,
+                    displayName: displayName,
+                    email: email,
+                    photoURL: photoURL,
+                  })
+                );
+              })
+              .catch((error) => {
+                // An error occurred
+                // ...
+              });
             console.log(user);
             // ...
           })
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            console.log(errorCode + " " + errorMessage)
-            setMessage(errorCode + " " + errorMessage)
+            console.log(errorCode + " " + errorMessage);
+            setMessage(errorCode + " " + errorMessage);
             // ..
           });
       } else {
-        signInWithEmailAndPassword(auth, email.current.value, password.current.value)
+        signInWithEmailAndPassword(
+          auth,
+          email.current.value,
+          password.current.value
+        )
           .then((userCredential) => {
             // Signed in
             const user = userCredential.user;
@@ -54,7 +90,7 @@ const Login = () => {
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            console.log(errorCode + " " + errorMessage)
+            console.log(errorCode + " " + errorMessage);
           });
       }
     }

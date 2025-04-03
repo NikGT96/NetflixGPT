@@ -1,9 +1,74 @@
+import { useNavigate } from "react-router-dom";
+import { auth } from "../Utils/firebase";
+import { signOut } from "firebase/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { addUser, removeUser } from "../Utils/userSlice";
+import { logo } from "../Utils/constants";
+
 const Header = () => {
-    return (
-        <div>
-            <img className="absolute z-10 bg-black/50 w-1/12" src="https://help.nflxext.com/helpcenter/OneTrust/oneTrust_production/consent/87b6a5c0-0104-4e96-a291-092c11350111/01938dc4-59b3-7bbc-b635-c4131030e85f/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png" alt="Logo" />
+
+  const dispatch = useDispatch();
+  const user = useSelector((store) => store.user);
+  const navigate = useNavigate();
+  // const dispatch = useDispatch();
+  const handleClick = () => {
+    // dispatch(removeUser());
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+   const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const { uid, displayName, email, photoURL } = user;
+        dispatch(addUser({ uid: uid, displayName: displayName, email: email, photoURL: photoURL }));
+        navigate("/browse");
+        // ...
+      } else {
+        dispatch(removeUser());
+        navigate("/")
+        // User is signed out
+        // ...
+      }
+    });
+    return () => {
+      unsubscribe();
+    }
+  }, []);
+
+  return (
+    <div className="flex justify-between">
+      <div>
+        <img
+          className="absolute z-10 bg-black/50 w-1/12"
+          src= {logo}
+          alt="Logo"
+        />
+      </div>
+      {user && (
+        <div className="flex justify-between">
+          <img
+            className="w-11 h-8 pl-2 pr-2"
+            src={user.photoURL}
+            alt="Coming"
+          />
+          <button className="bg-red-500 cursor-pointer" onClick={handleClick}>
+            Sign Out
+          </button>
         </div>
-    )
-}
+      )}
+    </div>
+  );
+};
 
 export default Header;

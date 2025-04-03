@@ -4,26 +4,30 @@ import Header from "./Header";
 import Login from "./Login";
 import Browse from "./Browse";
 import { Provider } from "react-redux";
-import appStore from "../Utils/appStore"
 
-const appRouter = createBrowserRouter([
-  {
-    path: "/",
-    element: <Login />,
-  },
-  {
-    path: "/browse",
-    element: <Browse />,
-  },
-]);
 
 const Body = () => {
+
+  
+
+  // we can write this onAuthStateChanged anywhere but i am writing it at the root level.  this will get us signed in user data.
+  
+
+  const appRouter = createBrowserRouter([
+    {
+      path: "/",
+      element: <Login />,
+    },
+    {
+      path: "/browse",
+      element: <Browse />,
+    },
+  ]);
+
   return (
-    <Provider store={appStore}>
     <div>
       <RouterProvider router={appRouter} />
     </div>
-    </Provider>
   );
 };
 
