@@ -7,7 +7,7 @@ const BackgroundVideo = ({ id }) => {
 
   return (
     <div>
-      <div className="fixed top-0 left-0 w-screen h-screen overflow-hidden">
+      <div className=" top-0 left-0 w-screen h-screen overflow-hidden">
         <iframe
         className="absolute top-0 left-0 w-full h-full object-contain -z-10"
           src={"https://www.youtube.com/embed/"+ trailer?.key +"?&autoplay=1&mute=1"}

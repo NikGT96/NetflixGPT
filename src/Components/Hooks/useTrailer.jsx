@@ -23,10 +23,6 @@ const useTrailer = (id) => {
         (video) => video?.type === "Trailer"
       );
       const trailer = filteredVideo ? filteredVideo[0] : json.results[0];
-      console.log(trailer);
-      //   console.log(json.results);
-      //   const filteredVideo = json.results.filter((video) => video?.type === "Trailer")
-      //   console.log(filteredVideo);
       dispatch(addTrailer(trailer));
     } catch (err) {
       console.log(err.message);
